@@ -9,7 +9,14 @@ const Group = db.Group;
  * @route   GET /api/users
  */
 exports.getAllUsers = async (req, res) => {
+  const { search } = req.query;
+  let whereClause = {};
+
+  if (search) {
+    whereClause.username = { [db.Sequelize.Op.like]: `%${search}%` };
+  }
   const users = await User.findAll({
+    where: whereClause,
     include: {
       model: Group,
       attributes: ["id", "name"],

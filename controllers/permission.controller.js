@@ -13,10 +13,13 @@ const { getUserPermissions } = require("../utils");
  */
 exports.getAllPermissions = async (req, res) => {
   const permissions = await Permission.findAll({
-    include: {
-      model: Module,
-      attributes: ["id", "name"],
-    },
+    include: [
+      {
+        model: Module,
+        attributes: ["id", "name"],
+      },
+      { model: Role, through: { attributes: [] } },
+    ],
     order: [["createdAt", "DESC"]],
   });
   return responseSuccess(
@@ -33,10 +36,13 @@ exports.getAllPermissions = async (req, res) => {
 exports.getPermissionById = async (req, res) => {
   const { permissionId } = req.validated;
   const permission = await Permission.findByPk(permissionId, {
-    include: {
-      model: Module,
-      attributes: ["id", "name"],
-    },
+    include: [
+      {
+        model: Module,
+        attributes: ["id", "name"],
+      },
+      { model: Role, through: { attributes: [] } },
+    ],
   });
   return responseSuccess(res, permission, "Permission retrieved successfully");
 };
@@ -120,7 +126,7 @@ exports.simulateAction = async (req, res) => {
   if (userPermissions.has(requiredPermission)) {
     return responseSuccess(
       res,
-      null,
+      { canPerform: true },
       "Simulation successful: User has permission."
     );
   } else {

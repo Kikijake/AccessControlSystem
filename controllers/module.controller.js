@@ -1,13 +1,17 @@
 const db = require("../models");
 const { responseSuccess } = require("../utils/response");
 const Module = db.Module;
+const Permission = db.Permission;
 
 /**
  * @desc    Get all modules
  * @route   GET /api/modules
  */
 exports.getAllModules = async (req, res) => {
-  const modules = await Module.findAll();
+  const modules = await Module.findAll({
+    include: { model: Permission},
+    order: [["createdAt", "DESC"]],
+  });
   return responseSuccess(res, modules, "Modules retrieved successfully");
 };
 

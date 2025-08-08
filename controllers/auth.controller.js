@@ -47,7 +47,7 @@ exports.login = async (req, res) => {
       { expiresIn: "1h" },
       (err, token) => {
         if (err) throw err;
-        return responseSuccess(res, { token }, "Login successful");
+        return responseSuccess(res, {username: user.username, token }, "Login successful");
       }
     );
   } catch (error) {

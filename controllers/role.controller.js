@@ -3,6 +3,7 @@ const { responseSuccess } = require("../utils/response");
 const Role = db.Role;
 const Permission = db.Permission;
 const Module = db.Module;
+const Group = db.Group;
 
 /**
  * @desc    Get all roles
@@ -11,11 +12,14 @@ const Module = db.Module;
 exports.getAllRoles = async (req, res) => {
   const roles = await Role.findAll(
     {
-      include: {
-        model: Permission,
-        through: { attributes: [] },
-        include: { model: Module },
-      },
+      include: [
+        {
+          model: Permission,
+          through: { attributes: [] },
+          include: { model: Module },
+        },
+        { model: Group, through: { attributes: [] } },
+      ],
     },
     {
       order: [["createdAt", "DESC"]],
@@ -30,7 +34,16 @@ exports.getAllRoles = async (req, res) => {
  */
 exports.getRoleById = async (req, res) => {
   const { roleId } = req.validated;
-  const role = await Role.findByPk(roleId);
+  const role = await Role.findByPk(roleId, {
+    include: [
+      {
+        model: Permission,
+        through: { attributes: [] },
+        include: { model: Module },
+      },
+      { model: Group, through: { attributes: [] } },
+    ],
+  });
   return responseSuccess(res, role, "Role retrieved successfully");
 };
 
